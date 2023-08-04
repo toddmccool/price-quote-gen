@@ -5,152 +5,249 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Price Quote Generator</title>
-  </head>
-  <body>
-    <h1>Price Quote Generator</h1>
-    <label for="dayOfWeek">Day of the week:</label>
-    <select id="dayOfWeek">
-      <option value="Sunday">Sunday</option>
-      <option value="Monday">Monday</option>
-      <option value="Tuesday">Tuesday</option>
-      <option value="Wednesday">Wednesday</option>
-      <option value="Thursday">Thursday</option>
-      <option value="Friday">Friday</option>
-      <option value="Saturday">Saturday</option></select
-    ><br />
-
-    <label for="isHoliday">Is it a holiday?</label>
-    <select id="isHoliday">
-      <option value="Y">Yes</option>
-      <option value="N">No</option></select
-    ><br />
-
-    <label for="location">Location:</label>
-    <select id="location">
-      <option value="Santa Barbara">Santa Barbara</option>
-      <option value="San Diego">San Diego</option>
-      <option value="Palm Springs">Palm Springs</option>
-      <option value="Riverside">Riverside</option>
-      <option value="San Fernando Valley">San Fernando Valley</option>
-      <option value="Orange County">Orange County</option>
-      <option value="San Gabriel Valley">San Gabriel Valley</option>
-      <option value="San Francisco">San Francisco</option>
-      <option value="Napa">Napa</option>
-      <option value="Out of state">Out of state</option></select
-    ><br />
-
-    <label for="eventSize">Size of the event:</label>
-    <select id="eventSize">
-      <option value="0-100">0-100 people</option>
-      <option value="200-400">200-400 people</option>
-      <option value="400+">400+ people</option></select
-    ><br />
-
-    <label for="numPlayers">Number of players:</label>
-    <select id="numPlayers">
-      <option value="0">0</option>
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-      <option value="5">5</option>
-      <option value="6">6</option></select
-    ><br />
-
-    <label for="specificPlayers">Specific players (if any):</label>
-    <input type="text" id="specificPlayers" /><br />
-
-    <label for="playDuration">How long should the band play (hours):</label>
-    <select id="playDuration">
-      <option value="0-3">0-3 hours</option>
-      <option value="3-5">3-5 hours</option></select
-    ><br />
-
-    <label for="setupTime">Setup time needed:</label>
-    <select id="setupTime">
-      <option value="0">Not needed</option>
-      <option value="1">1 hour in advance</option>
-      <option value="90">90 minutes in advance</option>
-      <option value="120">2 hours in advance</option></select
-    ><br />
-
-    <button onclick="generateQuote()">Generate Quote</button>
-
-    <p id="quoteResult"></p>
-
-    <script>
-      function capitalizeNames(names) {
-        return names
-          .split(",")
-          .map(
-            (name) => name.trim().charAt(0).toUpperCase() + name.trim().slice(1)
-          )
-          .join(", ");
+    <title>Band Price Quote Calculator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
       }
 
-      function generateQuote() {
-        const dayOfWeek = document.getElementById("dayOfWeek").value;
-        const isHoliday =
-          document.getElementById("isHoliday").value.toUpperCase() === "Y";
-        const location = document.getElementById("location").value;
-        const eventSize = document.getElementById("eventSize").value;
-        const numPlayers = document.getElementById("numPlayers").value;
-        const playDuration = document.getElementById("playDuration").value;
-        const setupTime = document.getElementById("setupTime").value;
-        const specificPlayersInput = document.getElementById("specificPlayers");
-        const specificPlayers = capitalizeNames(specificPlayersInput.value);
+      h1 {
+        text-align: center;
+      }
 
-        let baseRate = 300;
-        if (dayOfWeek === "Friday") {
-          baseRate = 400;
-        } else if (dayOfWeek === "Saturday") {
-          baseRate = 900;
+      form {
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      input[type="number"],
+      input[type="text"],
+      select {
+        width: 100%;
+        padding: 5px;
+        margin-bottom: 10px;
+        font-size: 14px;
+      }
+
+      button {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      #quoteResult {
+        margin-top: 20px;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Band Price Quote Calculator</h2>
+    <form id="quoteForm">
+      <label for="numMembers">Number of Band Members:</label>
+      <input type="number" id="numMembers" required />
+
+      <label for="bandMembers">Specific Band Members requested:</label>
+      <input type="text" id="bandMembers" />
+
+      <label for="dayOfWeek">Day of week:</label>
+      <select id="dayOfWeek" required>
+        <option value="Sun-Thu">Sunday - Thursday</option>
+        <option value="Fri">Friday</option>
+        <option value="Sat">Saturday afternoon/night</option>
+      </select>
+
+      <label for="locationTravel">Location/travel:</label>
+      <select id="locationTravel" required>
+        <option value="local">
+          Local (Orange County/San Fernando Valley/Los Angeles/San Gabriel
+          Valley)
+        </option>
+        <option value="slightTravel">Slight travel (corona, riverside)</option>
+        <option value="inState">
+          In-state non-flight travel (Santa Barbara, Palm Springs, San Diego)
+        </option>
+        <option value="flying">
+          Flying (aka far Northern California, Seattle, Portland, Vegas)
+        </option>
+      </select>
+
+      <label for="extraTimePlaying">Extra Time playing:</label>
+      <select id="extraTimePlaying" required>
+        <option value="0-3">0-3 hours</option>
+        <option value="3-5">3-5 hours</option>
+      </select>
+
+      <label for="extraSetUpTime">Extra set up time:</label>
+      <select id="extraSetUpTime" required>
+        <option value="whenever">
+          Whenever (there’s nothing else happening in the area before they
+          start)
+        </option>
+        <option value="30-min">30 min before</option>
+        <option value="1-hour">1 hour before</option>
+        <option value="2-hours">2 hours before</option>
+      </select>
+
+      <label for="soundReinforcement"
+        >Level of sound reinforcement needed:</label
+      >
+      <select id="soundReinforcement" required>
+        <option value="0-150">0-150 people</option>
+        <option value="150-300">150-300 people</option>
+        <option value="300+">300+ people</option>
+      </select>
+
+      <label for="isHoliday">Is the event on a holiday?</label>
+      <select id="isHoliday" required>
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+      </select>
+
+      <button type="submit">Calculate Quote</button>
+    </form>
+
+    <div id="quoteResult"></div>
+
+    <script>
+      document
+        .getElementById("quoteForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const numMembers = parseInt(
+            document.getElementById("numMembers").value
+          );
+          const bandMembers = capitalizeNames(
+            document.getElementById("bandMembers").value
+          );
+          const dayOfWeekRate = getDayOfWeekRate(
+            document.getElementById("dayOfWeek").value
+          );
+          const locationTravelRate = getLocationTravelRate(
+            document.getElementById("locationTravel").value
+          );
+          const extraTimePlayingRate = getExtraTimePlayingRate(
+            document.getElementById("extraTimePlaying").value
+          );
+          const extraSetUpTimeRate = getExtraSetUpTimeRate(
+            document.getElementById("extraSetUpTime").value
+          );
+          const soundReinforcementRate = getSoundReinforcementRate(
+            document.getElementById("soundReinforcement").value
+          );
+          const isHoliday =
+            document.getElementById("isHoliday").value === "yes";
+
+          const basePricePerMember =
+            dayOfWeekRate +
+            locationTravelRate +
+            extraTimePlayingRate +
+            extraSetUpTimeRate;
+          const levelSoundReinforcementPrice = getLevelSoundReinforcementPrice(
+            soundReinforcementRate
+          );
+          const totalCost =
+            basePricePerMember * numMembers + levelSoundReinforcementPrice;
+
+          // Check if flying option is selected and add a note about sound reinforcement
+          let soundReinforcementNote = "";
+          if (document.getElementById("locationTravel").value === "flying") {
+            soundReinforcementNote =
+              "<p><strong>Note:</strong> Price includes best estimate of flight costs but does not include sound reinforcement cost because sound will need to be contracted locally.</p>";
+          }
+
+          const finalQuote = isHoliday ? totalCost * 1.7 : totalCost;
+
+          displayQuoteResult(bandMembers, finalQuote, soundReinforcementNote);
+        });
+
+      function capitalizeNames(names) {
+        return names
+          .split(" ")
+          .map((name) => name.charAt(0).toUpperCase() + name.slice(1))
+          .join(" ");
+      }
+
+      function getDayOfWeekRate(dayOfWeek) {
+        switch (dayOfWeek) {
+          case "Sun-Thu":
+            return 300;
+          case "Fri":
+            return 400;
+          case "Sat":
+            return 900;
+          default:
+            return 0;
         }
+      }
 
-        let travelBump = 0;
-        if (["Santa Barbara", "San Diego", "Palm Springs"].includes(location)) {
-          travelBump = 75;
-        } else if (["San Francisco", "Napa"].includes(location)) {
-          travelBump = 200;
-        } else if (location === "Out of state") {
-          document.getElementById("quoteResult").innerText =
-            "The price of travel will depend on more factors. We'll be in touch with you shortly.";
-          return;
+      function getLocationTravelRate(locationTravel) {
+        switch (locationTravel) {
+          case "slightTravel":
+            return 100; // $50 per person + $50 for sound engineer (if 150-300 people sound reinforcement)
+          case "inState":
+            return 250; // $125 per person + $125 for sound engineer (if 150-300 people sound reinforcement)
+          case "flying":
+            return 225; // $225 per person (sound reinforcement needs to be contracted locally)
+          default:
+            return 0;
         }
+      }
 
-        let additionalPlayCost = 0;
-        if (playDuration === "3-5") {
-          additionalPlayCost = 200 * numPlayers;
+      function getExtraTimePlayingRate(extraTimePlaying) {
+        return extraTimePlaying === "3-5" ? 200 : 0;
+      }
+
+      function getExtraSetUpTimeRate(extraSetUpTime) {
+        switch (extraSetUpTime) {
+          case "1-hour":
+            return 60;
+          case "2-hours":
+            return 100;
+          default:
+            return 0;
         }
+      }
 
-        let setupTimeCost = 0;
-        if (setupTime === "1") {
-          setupTimeCost = 50 * numPlayers;
-        } else if (setupTime === "90") {
-          setupTimeCost = 90 * numPlayers;
-        } else if (setupTime === "120") {
-          setupTimeCost = 150 * numPlayers;
+      function getSoundReinforcementRate(soundReinforcement) {
+        switch (soundReinforcement) {
+          case "0-150":
+            return 50;
+          case "150-300":
+            return 400;
+          case "300+":
+            return 1000;
+          default:
+            return 0;
         }
+      }
 
-        let totalCostPerPlayer =
-          (baseRate + additionalPlayCost + travelBump + setupTimeCost) *
-          (isHoliday ? 1.7 : 1);
+      function getLevelSoundReinforcementPrice(soundReinforcementRate) {
+        return soundReinforcementRate;
+      }
 
-        let soundCost = 0;
-        if (eventSize === "0-100") {
-          soundCost = 50;
-        } else if (eventSize === "200-400") {
-          soundCost = 300;
-        } else if (eventSize === "400+") {
-          soundCost = 600;
-        }
+      function displayQuoteResult(
+        bandMembers,
+        totalCost,
+        soundReinforcementNote
+      ) {
+        const quoteResult = document.getElementById("quoteResult");
+        const formattedTotalCost = formatCurrency(totalCost);
+        quoteResult.innerHTML = `<p>Band Members Requested: ${bandMembers}</p><p>Price Quote: $${formattedTotalCost}</p>${soundReinforcementNote}`;
+      }
 
-        let totalCost = totalCostPerPlayer * numPlayers + soundCost;
-
-        document.getElementById(
-          "quoteResult"
-        ).innerText = `Specific Players: ${specificPlayers}\nPrice Quote: $${totalCost}`;
+      function formatCurrency(value) {
+        return value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,");
       }
     </script>
   </body>
