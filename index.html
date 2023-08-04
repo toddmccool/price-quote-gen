@@ -51,7 +51,7 @@
     </style>
   </head>
   <body>
-    <h2>Band Price Quote Calculator</h2>
+    <h3>Band Price Quote Calculator</h3>
     <form id="quoteForm">
       <label for="numMembers">Number of Band Members:</label>
       <input type="number" id="numMembers" required />
@@ -243,7 +243,7 @@
       ) {
         const quoteResult = document.getElementById("quoteResult");
         const formattedTotalCost = formatCurrency(totalCost);
-        quoteResult.innerHTML = `<p>Band Members Requested: ${bandMembers}</p><p>Price Quote: $${formattedTotalCost}</p>${soundReinforcementNote}`;
+        quoteResult.innerHTML = `<p>Band Members Requested: ${bandMembers} ...and Price Estimate: $${formattedTotalCost}</p>${soundReinforcementNote}`;
       }
 
       function formatCurrency(value) {
